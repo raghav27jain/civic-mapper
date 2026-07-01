@@ -1,42 +1,42 @@
-const express = require("express");
-const router = express.Router();
-const multer = require("multer");
-const path = require("path");
-const {
-  createComplaint,
-  getComplaints,
-} = require("../controllers/complaintController");
+// complaintRoutes.js
+// POST is now protected — only logged in citizens can submit
+// GET is public — anyone can see complaints on map
 
-// --- Multer Configuration ---
+const express    = require("express");
+const router     = express.Router();
+const multer     = require("multer");
+const path       = require("path");
+const { createComplaint, getComplaints, updateStatus } = require("../controllers/complaintController");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
+
+// Multer config — same as before
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Save to server/uploads/
-  },
-  filename: (req, file, cb) => {
-    // Unique filename: fieldname-timestamp.ext  e.g. image-1714900000000.jpg
+  destination: (req, file, cb) => { cb(null, "uploads/"); },
+  filename:    (req, file, cb) => {
     const uniqueName = `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
     cb(null, uniqueName);
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|webp/;
-  const isValid = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  if (isValid) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only image files (jpg, png, webp) are allowed"));
-  }
+  const allowed = /jpeg|jpg|png|webp/;
+  const valid   = allowed.test(path.extname(file.originalname).toLowerCase());
+  valid ? cb(null, true) : cb(new Error("Only image files allowed"));
 };
 
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+  limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-// --- Routes ---
-router.post("/", upload.single("image"), createComplaint);
-router.get("/", getComplaints);
+// POST — protected (citizen must be logged in)
+router.post("/",        protect, upload.single("image"), createComplaint);
+
+// GET — public
+router.get("/",         getComplaints);
+
+// PUT — admin only (update complaint status)
+router.put("/:id/status", protect, adminOnly, updateStatus);
 
 module.exports = router;

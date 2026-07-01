@@ -1,3 +1,5 @@
+// Complaint.js — Updated with citizenName + citizenPhone fields
+
 const mongoose = require("mongoose");
 
 const ComplaintSchema = new mongoose.Schema(
@@ -6,11 +8,11 @@ const ComplaintSchema = new mongoose.Schema(
       type: String,
       required: [true, "Description is required"],
       trim: true,
-      maxlength: [500, "Description cannot exceed 500 characters"],
+      maxlength: [500, "Max 500 characters"],
     },
     imageUrl: {
       type: String,
-      default: null, // Optional for now; will be set by multer
+      default: null,
     },
     location: {
       lat: { type: Number, required: true },
@@ -23,17 +25,24 @@ const ComplaintSchema = new mongoose.Schema(
     },
     priorityScore: {
       type: Number,
-      default: 1, // Will be calculated by simple logic in controller
+      default: 1,
     },
     status: {
       type: String,
       enum: ["open", "in-progress", "resolved"],
       default: "open",
     },
+    // New fields — citizen identity (only visible to admin)
+    citizenName: {
+      type: String,
+      default: "Anonymous",
+    },
+    citizenPhone: {
+      type: String,
+      default: "N/A",
+    },
   },
-  {
-    timestamps: true, // Adds createdAt + updatedAt automatically
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Complaint", ComplaintSchema);
