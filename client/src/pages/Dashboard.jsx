@@ -153,7 +153,7 @@ const Dashboard = ({ complaints, loading, user, onComplaintsUpdated }) => {
         </div>
       )}
       
-      
+
       {/* Page Header */}
       <div className="dashboard-header">
         <h1 className="dashboard-title">Complaints Dashboard</h1>
@@ -314,11 +314,11 @@ const Dashboard = ({ complaints, loading, user, onComplaintsUpdated }) => {
                 {complaint.imageUrl ? (
                   <div className="card-image-wrap">
                     <img
-                      src={`http://localhost:5000${complaint.imageUrl}`}
+                      src={`${import.meta.env.VITE_API_URL || "http://localhost:5000"}${complaint.imageUrl}`}
                       alt="Report attachment"
                       className="card-image"
                       style={{ cursor: "zoom-in" }}
-                      onClick={() => setSelectedImage(`http://localhost:5000${complaint.imageUrl}`)}
+                      onClick={() => setSelectedImage(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}${complaint.imageUrl}`)}
                     />
                     <span
                       className="card-cat-badge"

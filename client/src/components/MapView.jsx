@@ -106,7 +106,7 @@ const MapView = ({ complaints, loading }) => (
 
                 {/* Verification Photo */}
                 {c.imageUrl && (
-                  <img src={`http://localhost:5000${c.imageUrl}`} alt="Complaint preview"
+                  <img src={`${import.meta.env.VITE_API_URL || "http://localhost:5000"}${c.imageUrl}`} alt="Complaint preview"
                     style={{ width:"100%", height:120, objectFit:"cover", display:"block" }} />
                 )}
 
